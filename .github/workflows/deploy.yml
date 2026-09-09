@@ -34,17 +34,17 @@ jobs:
         run: |
           docker build \
             --build-arg APP_VERSION=${GITHUB_SHA::7} \
-            -t $ECR_REPOSITORY:${ GITHUB_SHA::7 } .
+            -t $ECR_REPOSITORY:${GITHUB_SHA::7 } .
 
       - name: Tag Docker image
         run: |
-          docker tag $ECR_REPOSITORY:${ GITHUB_SHA::7 } \
-          ${{ secrets.ECR_REGISTRY }}/$ECR_REPOSITORY:${ GITHUB_SHA::7 }
+          docker tag $ECR_REPOSITORY:${GITHUB_SHA::7 } \
+          ${{ secrets.ECR_REGISTRY }}/$ECR_REPOSITORY:${GITHUB_SHA::7 }
 
       - name: Push Docker image to ECR
         run: |
           docker push \
-          ${{ secrets.ECR_REGISTRY }}/$ECR_REPOSITORY:${ GITHUB_SHA::7 }
+          ${{ secrets.ECR_REGISTRY }}/$ECR_REPOSITORY:${GITHUB_SHA::7 }
 
       - name: Download current ECS task definition
         run: |
@@ -56,7 +56,7 @@ jobs:
       - name: Update ECS task definition image
         run: |
           cat task-definition.json | jq \
-          --arg IMAGE "${{ secrets.ECR_REGISTRY }}/$ECR_REPOSITORY:${ GITHUB_SHA::7 }" \
+          --arg IMAGE "${{ secrets.ECR_REGISTRY }}/$ECR_REPOSITORY:${GITHUB_SHA::7 }" \
           '.containerDefinitions[0].image = $IMAGE
           | del(
               .taskDefinitionArn,
