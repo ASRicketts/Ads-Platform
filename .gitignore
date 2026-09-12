@@ -5,8 +5,8 @@ __pycache__/
 .env
 .vscode/
 .terraform/
-*.tfstate.
-*.tfstate 
+*.tfstate
+*.tfstate.*
 *.tfstate.backup
 /aws/
 terraform.tfvars
