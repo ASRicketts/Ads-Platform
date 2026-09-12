@@ -1,3 +1,7 @@
+resource "aws_cloudwatch_log_group" "ecs" {
+  name              = "/ecs/ads-platform"
+  retention_in_days = 7
+}
 resource "aws_ecs_cluster" "main" {
   name = "ads-platform-cluster"
 }
@@ -15,9 +19,18 @@ resource "aws_ecs_task_definition" "app" {
   container_definitions = jsonencode([
     {
       name  = "ads-platform"
-      image = "622422244983.dkr.ecr.us-east-1.amazonaws.com/ads-platform:latest"
+      image = "622422244983.dkr.ecr.us-east-1.amazonaws.com/ads-platform:15efd48"
 
       essential = true
+
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.ecs.name
+          "awslogs-region"        = "us-east-1"
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
 
       portMappings = [
         {
@@ -39,10 +52,10 @@ resource "aws_ecs_task_definition" "app" {
           name  = "APP_PORT"
           value = "8000"
         },
-      {
-          name = "DATABASE_URL"
+        {
+          name  = "DATABASE_URL"
           value = "postgresql://ads_user:${var.db_password}@${aws_db_instance.postgres.address}:5432/ads_platform"
-       }
+        }
       ]
     }
   ])
